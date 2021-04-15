@@ -1,20 +1,26 @@
 import * as scheduler from 'node-cron';
 import { mongodbBackup } from './mongodb-backup';
 
-const database = process.argv[2];
-
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const cron = () => {
-  console.log(`Cron started at ${new Date().toISOString()}`);
+  const cronScheduleTime = '59 23 * * *';
 
-  scheduler.schedule('59 23 * * *', async () => {
+  console.log(
+    `Cron started at ${new Date().toISOString()} (${cronScheduleTime})`
+  );
+
+  scheduler.schedule(cronScheduleTime, async () => {
     console.log(`Executing cron at ${new Date().toISOString()}`);
-    await mongodbBackup(database);
+
+    try {
+      await mongodbBackup();
+    } catch (e) {
+      console.error(e);
+      console.log(
+        'An exception occurred while making backup. Make sure that your BBDD in Mongo exists.'
+      );
+    }
   });
 };
 
-if (!database) {
-  console.error('First argument must be the database to backup');
-} else {
-  cron();
-}
+cron();

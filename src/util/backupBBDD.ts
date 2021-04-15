@@ -11,5 +11,7 @@ export const backupBBDD = (database: string): void => {
     console.error(`Backup process failed: ${backupProcess.error.message}`);
 
     throw backupProcess.error;
+  } else {
+    console.log('Backup process success');
   }
 };

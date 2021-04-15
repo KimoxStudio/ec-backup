@@ -33,5 +33,10 @@ export const uploadToGoogleStorage = async (
     }
   });
 
+  fs.rmSync(filePath, {
+    force: true,
+    recursive: true
+  });
+
   return bucket.file(destinationPath).publicUrl();
 };

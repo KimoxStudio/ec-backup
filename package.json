@@ -12,6 +12,7 @@
     "eslint": "~7.21.0",
     "eslint-config-prettier": "~8.1.0",
     "eslint-plugin-jest": "~24.1.5",
+    "pm2": "^4.5.6",
     "prettier": "~2.2.1",
     "rimraf": "~3.0.2",
     "ts-jest": "~26.5.2",
@@ -24,8 +25,8 @@
     "start:dev": "ts-node src/main.ts",
     "start:dev:cron": "ts-node src/cron.ts",
     "clean": "rimraf coverage build tmp",
-    "build": "tsc -p tsconfig.release.json",
-    "build:watch": "tsc -w -p tsconfig.release.json",
+    "build": "yarn clean && tsc -p tsconfig.release.json && cp ./.env ./build/.env ",
+    "pm2": "yarn build && pm2 start build/src/cron.js",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "author": "Jesé Romero Arbelo <jeseromeroarbelo@gmail.com>",

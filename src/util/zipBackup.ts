@@ -12,6 +12,7 @@ export const zipBackup = (filename: string): void => {
 
     throw zipProcess.error;
   } else {
+    console.log('Zip backup process success');
     fs.rmdirSync(`${DIR}/dump/`, {
       recursive: true
     });
