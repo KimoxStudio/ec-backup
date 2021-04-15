@@ -29,6 +29,8 @@
   "author": "Jesé Romero Arbelo <jeseromeroarbelo@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@google-cloud/storage": "^5.8.3",
+    "dotenv": "^8.2.0",
     "tslib": "~2.1.0"
   }
 }
