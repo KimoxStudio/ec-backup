@@ -20,7 +20,9 @@
   },
   "scripts": {
     "start": "node build/src/main.js",
+    "start:cron": "node build/src/main.js",
     "start:dev": "ts-node src/main.ts",
+    "start:dev:cron": "ts-node src/cron.ts",
     "clean": "rimraf coverage build tmp",
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
@@ -31,6 +33,7 @@
   "dependencies": {
     "@google-cloud/storage": "^5.8.3",
     "dotenv": "^8.2.0",
+    "node-cron": "^3.0.0",
     "tslib": "~2.1.0"
   }
 }

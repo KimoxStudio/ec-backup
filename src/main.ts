@@ -1,22 +1,10 @@
-import { createOutputFolder } from './util/createOutputFolder';
-import { backupBBDD } from './util/backupBBDD';
-import { getFilename } from './util/getFilename';
-import { zipBackup } from './util/zipBackup';
-import { uploadToGoogleStorage } from './util/uploadToGoogleStorage';
+import { mongodbBackup } from './mongodb-backup';
 
 const database = process.argv[2];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const main = async () => {
-  const filename = getFilename(database);
-
-  createOutputFolder();
-
-  backupBBDD(database);
-
-  zipBackup(filename);
-
-  await uploadToGoogleStorage(filename);
+  await mongodbBackup(database);
 };
 
 if (!database) {
