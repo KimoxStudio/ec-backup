@@ -10,10 +10,10 @@ export const backupBBDD = (database: string): void => {
     '--forceTableScan'
   ]);
 
-  if (backupProcess.error) {
-    console.error(`Backup process failed: ${backupProcess.error.message}`);
+  if (backupProcess.status === 1) {
+    console.error(`Backup process failed...`);
 
-    throw backupProcess.error;
+    throw new Error(String(backupProcess.output));
   } else {
     console.log('Backup process success');
   }

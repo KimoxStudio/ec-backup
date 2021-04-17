@@ -7,10 +7,12 @@ export const zipBackup = (filename: string): void => {
     cwd: `${process.cwd()}/${DIR}`
   });
 
-  if (zipProcess.error) {
-    console.error(`Zip backup process failed: ${zipProcess.error.message}`);
+  const output = String(zipProcess.output);
 
-    throw zipProcess.error;
+  if (zipProcess.status === 1 || output.includes('zip warning')) {
+    console.error(`Zip backup process failed...`);
+
+    throw new Error(output);
   } else {
     console.log('Zip backup process success');
     fs.rmdirSync(`${DIR}/dump/`, {
