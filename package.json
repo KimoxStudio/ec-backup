@@ -21,8 +21,8 @@
   "scripts": {
     "start": "node build/src/main.js",
     "start:cron": "node build/src/main.js",
-    "start:dev": "ts-node src/main.ts",
-    "start:dev:cron": "ts-node src/cron.ts",
+    "start:dev": "ts-node src/main.ts --dry",
+    "start:dev:cron": "ts-node src/cron.ts --dry",
     "clean": "rimraf coverage build tmp",
     "build": "yarn clean && tsc -p tsconfig.release.json && cp ./.env ./build/.env ",
     "pm2": "yarn build && pm2 start build/src/cron.js",
@@ -34,6 +34,7 @@
     "@google-cloud/storage": "^5.8.3",
     "dotenv": "^8.2.0",
     "node-cron": "^3.0.0",
+    "node-fetch": "^2.6.1",
     "tslib": "~2.1.0"
   }
 }

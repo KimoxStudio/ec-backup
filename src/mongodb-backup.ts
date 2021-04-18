@@ -4,17 +4,27 @@ import { backupBBDD } from './use-cases/backupBBDD';
 import { zipBackup } from './use-cases/zipBackup';
 import { uploadToGoogleStorage } from './use-cases/uploadToGoogleStorage';
 import { env } from './env';
+import { config } from './config';
+import { sendNotification } from './util/sendNotification';
 
 export const mongodbBackup = async (): Promise<void> => {
-  const database = env.DATABASE_NAME;
+  try {
+    const database = env.DATABASE_NAME;
 
-  const filename = getFilename(database);
+    const filename = getFilename(database);
 
-  createOutputFolder();
+    createOutputFolder();
 
-  backupBBDD(database);
+    backupBBDD(database);
 
-  zipBackup(filename);
+    zipBackup(filename);
 
-  await uploadToGoogleStorage(filename);
+    await uploadToGoogleStorage(filename);
+  } catch (e) {
+    console.error(e);
+
+    if (config.canSendNotification) {
+      await sendNotification(`An exception occurred while making backup: ${e}`);
+    }
+  }
 };

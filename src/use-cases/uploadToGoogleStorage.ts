@@ -3,40 +3,48 @@ import { Bucket } from '@google-cloud/storage';
 import { DIR } from '../constants';
 import { env } from '../env';
 import * as fs from 'fs';
+import { config } from '../config';
+import { sendNotification } from '../util/sendNotification';
 
 export const uploadToGoogleStorage = async (
   filename: string
-): Promise<string> => {
-  const storage = new Storage.Storage({
-    keyFilename: env.GCP_STORAGE_KEY_PATH,
-    projectId: env.GCP_PROJECT_ID
-  });
-
-  const bucket = new Bucket(storage, env.GCP_BUCKET_NAME);
-
+): Promise<void> => {
   const filePath = `${DIR}/${filename}.zip`;
 
-  const destinationFolder = env.GCP_BACKUPS_FOLDER_PATH || `backups`;
-  const destinationPath = `${destinationFolder}/${filename}.zip`;
+  if (!config.isDryExecution) {
+    const storage = new Storage.Storage({
+      keyFilename: env.GCP_STORAGE_KEY_PATH,
+      projectId: env.GCP_PROJECT_ID
+    });
 
-  const backupSize = fs.statSync(filePath).size;
+    const bucket = new Bucket(storage, env.GCP_BUCKET_NAME);
 
-  await bucket.upload(filePath, {
-    destination: destinationPath,
-    onUploadProgress: (progressEvent) => {
-      const progress = (
-        (progressEvent.bytesWritten / backupSize) *
-        100
-      ).toFixed(2);
+    const destinationFolder = env.GCP_BACKUPS_FOLDER_PATH || `backups`;
+    const destinationPath = `${destinationFolder}/${filename}.zip`;
 
-      console.log(`Upload: ${progress}%`);
-    }
-  });
+    const backupSize = fs.statSync(filePath).size;
+
+    await bucket.upload(filePath, {
+      destination: destinationPath,
+      onUploadProgress: (progressEvent) => {
+        const progress = (
+          (progressEvent.bytesWritten / backupSize) *
+          100
+        ).toFixed(2);
+
+        console.log(`Upload: ${progress}%`);
+      }
+    });
+  } else {
+    console.debug('Dry execution: skipping backup upload');
+  }
 
   fs.rmSync(filePath, {
     force: true,
     recursive: true
   });
 
-  return bucket.file(destinationPath).publicUrl();
+  if (config.canSendNotification) {
+    await sendNotification('Backup upload successfully 🚀');
+  }
 };
