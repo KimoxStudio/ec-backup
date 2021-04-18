@@ -3,10 +3,10 @@ import { createOutputFolder } from './util/createOutputFolder';
 import { backupBBDD } from './use-cases/backupBBDD';
 import { zipBackup } from './use-cases/zipBackup';
 import { uploadToGoogleStorage } from './use-cases/uploadToGoogleStorage';
-import { config } from './config';
+import { env } from './env';
 
 export const mongodbBackup = async (): Promise<void> => {
-  const database = config.DATABASE_NAME;
+  const database = env.DATABASE_NAME;
 
   const filename = getFilename(database);
 

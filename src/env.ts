@@ -1,17 +1,17 @@
 import { config as dotenvConfig } from 'dotenv';
 
-const env = dotenvConfig({ path: `${__dirname}/../.env` }).parsed;
+const dotenv = dotenvConfig({ path: `${__dirname}/../.env` }).parsed;
 
 const get = (key: string, defaultValue?: string): string => {
-  if (!env[key] && !defaultValue) {
+  if (!dotenv[key] && !defaultValue) {
     console.error(`${key} env variable is required and not found.`);
     process.exit(1);
   }
 
-  return env[key];
+  return dotenv[key];
 };
 
-export const config = {
+export const env = {
   GCP_STORAGE_KEY_PATH: get('GCP_STORAGE_KEY_PATH'),
   GCP_PROJECT_ID: get('GCP_PROJECT_ID'),
   GCP_BUCKET_NAME: get('GCP_BUCKET_NAME'),
