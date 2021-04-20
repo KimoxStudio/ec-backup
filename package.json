@@ -1,6 +1,6 @@
 {
-  "name": "mongodb-backup",
-  "version": "0.0.0",
+  "name": "mongo-to-gcs-backup",
+  "version": "0.0.1",
   "description": "",
   "engines": {
     "node": ">= 14.16 <15"
