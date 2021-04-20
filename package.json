@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "node build/src/main.js",
-    "start:cron": "node build/src/main.js",
+    "start:cron": "node build/src/cron.js",
     "start:dev": "ts-node src/main.ts --dry",
     "start:dev:cron": "ts-node src/cron.ts --dry",
     "clean": "rimraf coverage build tmp",
