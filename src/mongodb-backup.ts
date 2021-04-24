@@ -6,6 +6,7 @@ import { uploadToGoogleStorage } from './use-cases/uploadToGoogleStorage';
 import { env } from './env';
 import { config } from './config';
 import { sendNotification } from './util/sendNotification';
+import { DIR } from './constants';
 
 export const mongodbBackup = async (): Promise<void> => {
   try {
@@ -13,13 +14,22 @@ export const mongodbBackup = async (): Promise<void> => {
 
     const filename = getFilename(database);
 
-    createOutputFolder();
+    createOutputFolder(DIR);
 
-    backupBBDD(database);
+    backupBBDD({ database, directory: DIR, hostname: env.DATABASE_HOST });
 
-    zipBackup(filename);
+    zipBackup({ filename, directory: DIR });
 
-    await uploadToGoogleStorage(filename);
+    await uploadToGoogleStorage({
+      filename,
+      directory: DIR,
+      gcpConfig: {
+        storageKey: env.GCP_STORAGE_KEY_PATH,
+        projectId: env.GCP_PROJECT_ID,
+        bucketName: env.GCP_BUCKET_NAME,
+        backupsFolderPath: env.GCP_BACKUPS_FOLDER_PATH
+      }
+    });
   } catch (e) {
     console.error(e);
 

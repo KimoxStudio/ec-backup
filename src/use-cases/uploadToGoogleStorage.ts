@@ -1,25 +1,34 @@
 import * as Storage from '@google-cloud/storage';
 import { Bucket } from '@google-cloud/storage';
-import { DIR } from '../constants';
-import { env } from '../env';
 import * as fs from 'fs';
 import { config } from '../config';
 import { sendNotification } from '../util/sendNotification';
 
-export const uploadToGoogleStorage = async (
-  filename: string
-): Promise<void> => {
-  const filePath = `${DIR}/${filename}.zip`;
+export const uploadToGoogleStorage = async ({
+  filename,
+  directory,
+  gcpConfig: { storageKey, projectId, bucketName, backupsFolderPath }
+}: {
+  filename: string;
+  directory: string;
+  gcpConfig: {
+    storageKey: string;
+    projectId: string;
+    bucketName: string;
+    backupsFolderPath: string;
+  };
+}): Promise<void> => {
+  const filePath = `${directory}/${filename}.zip`;
 
   if (!config.isDryExecution) {
     const storage = new Storage.Storage({
-      keyFilename: env.GCP_STORAGE_KEY_PATH,
-      projectId: env.GCP_PROJECT_ID
+      keyFilename: storageKey,
+      projectId: projectId
     });
 
-    const bucket = new Bucket(storage, env.GCP_BUCKET_NAME);
+    const bucket = new Bucket(storage, bucketName);
 
-    const destinationFolder = env.GCP_BACKUPS_FOLDER_PATH || `backups`;
+    const destinationFolder = backupsFolderPath || `backups`;
     const destinationPath = `${destinationFolder}/${filename}.zip`;
 
     const backupSize = fs.statSync(filePath).size;

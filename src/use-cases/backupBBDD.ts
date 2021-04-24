@@ -1,12 +1,18 @@
 import { spawnSync } from 'child_process';
-import { DIR } from '../constants';
-import { env } from '../env';
 
-export const backupBBDD = (database: string): void => {
+export const backupBBDD = ({
+  database,
+  directory,
+  hostname
+}: {
+  database: string;
+  directory: string;
+  hostname: string;
+}): void => {
   const backupProcess = spawnSync('mongodump', [
-    `-h=${env.DATABASE_HOST}`,
+    `-h=${hostname}`,
     `--db=${database}`,
-    `--out=${DIR}/dump`,
+    `--out=${directory}/dump`,
     '--forceTableScan'
   ]);
 

@@ -1,10 +1,15 @@
 import * as fs from 'fs';
 import { spawnSync } from 'child_process';
-import { DIR } from '../constants';
 
-export const zipBackup = (filename: string): void => {
+export const zipBackup = ({
+  filename,
+  directory
+}: {
+  filename: string;
+  directory: string;
+}): void => {
   const zipProcess = spawnSync('zip', ['-r', `${filename}.zip`, `dump`], {
-    cwd: `${process.cwd()}/${DIR}`
+    cwd: `${process.cwd()}/${directory}`
   });
 
   const output = String(zipProcess.output);
@@ -15,7 +20,7 @@ export const zipBackup = (filename: string): void => {
     throw new Error(output);
   } else {
     console.log('Zip backup process success');
-    fs.rmdirSync(`${DIR}/dump/`, {
+    fs.rmdirSync(`${directory}/dump/`, {
       recursive: true
     });
   }
