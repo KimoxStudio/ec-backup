@@ -5,7 +5,7 @@ import { zipBackup } from './use-cases/zipBackup';
 import { uploadToGoogleStorage } from './use-cases/uploadToGoogleStorage';
 import { env } from './env';
 import { config } from './config';
-import { sendNotification } from './util/sendNotification';
+import { sendNotification } from './use-cases/sendNotification';
 import { DIR } from './constants';
 
 export const mongodbBackup = async (): Promise<void> => {
