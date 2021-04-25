@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { spawnSync } from 'child_process';
 
 export const zipBackup = ({
@@ -20,8 +19,5 @@ export const zipBackup = ({
     throw new Error(output);
   } else {
     console.log('Zip backup process success');
-    fs.rmdirSync(`${directory}/dump/`, {
-      recursive: true
-    });
   }
 };

@@ -7,12 +7,15 @@ import { env } from './env';
 import { config } from './config';
 import { sendNotification } from './use-cases/sendNotification';
 import { DIR } from './constants';
+import { cleanup } from './use-cases/cleanup';
 
 export const mongodbBackup = async (): Promise<void> => {
   try {
     const database = env.DATABASE_NAME;
 
     const filename = getFilename(database);
+
+    cleanup(DIR);
 
     createOutputFolder(DIR);
 
@@ -36,6 +39,8 @@ export const mongodbBackup = async (): Promise<void> => {
     }
 
     await sendNotification('Backup upload successfully 🚀');
+
+    cleanup(DIR);
   } catch (e) {
     console.error(e);
     await sendNotification(`An exception occurred while making backup: ${e}`);

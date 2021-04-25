@@ -41,9 +41,4 @@ export const uploadToGoogleStorage = async ({
       console.log(`Upload: ${progress}%`);
     }
   });
-
-  fs.rmSync(filePath, {
-    force: true,
-    recursive: true
-  });
 };
