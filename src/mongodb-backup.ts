@@ -20,21 +20,24 @@ export const mongodbBackup = async (): Promise<void> => {
 
     zipBackup({ filename, directory: DIR });
 
-    await uploadToGoogleStorage({
-      filename,
-      directory: DIR,
-      gcpConfig: {
-        storageKey: env.GCP_STORAGE_KEY_PATH,
-        projectId: env.GCP_PROJECT_ID,
-        bucketName: env.GCP_BUCKET_NAME,
-        backupsFolderPath: env.GCP_BACKUPS_FOLDER_PATH
-      }
-    });
+    if (!config.isDryExecution) {
+      await uploadToGoogleStorage({
+        filename,
+        directory: DIR,
+        gcpConfig: {
+          storageKey: env.GCP_STORAGE_KEY_PATH,
+          projectId: env.GCP_PROJECT_ID,
+          bucketName: env.GCP_BUCKET_NAME,
+          backupsFolderPath: env.GCP_BACKUPS_FOLDER_PATH
+        }
+      });
+    } else {
+      console.debug('Dry execution: skipping backup upload');
+    }
+
+    await sendNotification('Backup upload successfully 🚀');
   } catch (e) {
     console.error(e);
-
-    if (config.canSendNotification) {
-      await sendNotification(`An exception occurred while making backup: ${e}`);
-    }
+    await sendNotification(`An exception occurred while making backup: ${e}`);
   }
 };

@@ -1,8 +1,6 @@
 import * as Storage from '@google-cloud/storage';
 import { Bucket } from '@google-cloud/storage';
 import * as fs from 'fs';
-import { config } from '../config';
-import { sendNotification } from '../util/sendNotification';
 
 export const uploadToGoogleStorage = async ({
   filename,
@@ -20,40 +18,32 @@ export const uploadToGoogleStorage = async ({
 }): Promise<void> => {
   const filePath = `${directory}/${filename}.zip`;
 
-  if (!config.isDryExecution) {
-    const storage = new Storage.Storage({
-      keyFilename: storageKey,
-      projectId: projectId
-    });
+  const storage = new Storage.Storage({
+    keyFilename: storageKey,
+    projectId: projectId
+  });
 
-    const bucket = new Bucket(storage, bucketName);
+  const bucket = new Bucket(storage, bucketName);
 
-    const destinationFolder = backupsFolderPath || `backups`;
-    const destinationPath = `${destinationFolder}/${filename}.zip`;
+  const destinationFolder = backupsFolderPath || `backups`;
+  const destinationPath = `${destinationFolder}/${filename}.zip`;
 
-    const backupSize = fs.statSync(filePath).size;
+  const backupSize = fs.statSync(filePath).size;
 
-    await bucket.upload(filePath, {
-      destination: destinationPath,
-      onUploadProgress: (progressEvent) => {
-        const progress = (
-          (progressEvent.bytesWritten / backupSize) *
-          100
-        ).toFixed(2);
+  await bucket.upload(filePath, {
+    destination: destinationPath,
+    onUploadProgress: (progressEvent) => {
+      const progress = (
+        (progressEvent.bytesWritten / backupSize) *
+        100
+      ).toFixed(2);
 
-        console.log(`Upload: ${progress}%`);
-      }
-    });
-  } else {
-    console.debug('Dry execution: skipping backup upload');
-  }
+      console.log(`Upload: ${progress}%`);
+    }
+  });
 
   fs.rmSync(filePath, {
     force: true,
     recursive: true
   });
-
-  if (config.canSendNotification) {
-    await sendNotification('Backup upload successfully 🚀');
-  }
 };

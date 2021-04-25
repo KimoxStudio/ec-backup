@@ -3,6 +3,13 @@ import { env } from '../env';
 import { config } from '../config';
 
 export const sendNotification = async (message: string): Promise<void> => {
+  if (!config.canSendNotification) {
+    console.debug(
+      `Notification ${message} could not be sent due unset configuration`
+    );
+    return;
+  }
+
   if (!config.isDryExecution) {
     try {
       const body = {
