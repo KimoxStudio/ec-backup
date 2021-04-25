@@ -1,9 +1,9 @@
 import * as scheduler from 'node-cron';
 import { mongodbBackup } from './mongodbBackup';
+import { env } from './env';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 const cron = () => {
-  const cronScheduleTime = '59 23 * * *';
+  const cronScheduleTime = env.CRON_SCHEDULE_TIME;
 
   console.log(
     `Cron started at ${new Date().toISOString()} (${cronScheduleTime})`
