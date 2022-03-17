@@ -1,5 +1,5 @@
 {
-  "name": "mongo-to-gcs-backup",
+  "name": "easy-backup",
   "version": "0.0.1",
   "author": "Jesé Romero Arbelo <jeseromeroarbelo@gmail.com>",
   "license": "Apache-2.0",
