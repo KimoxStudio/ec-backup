@@ -119,8 +119,13 @@ export class CronCliCommand extends BackupCliCommand {
 
     const dryParam = params.dry ? '--dry' : '';
 
+    const script =
+      process.env.NODE_ENV === 'production'
+        ? `node build/src/main.js`
+        : `ts-node src/main.ts`;
+
     await pm2p.start({
-      script: `ts-node src/main.ts cron -d ${dryParam} -i ${params.id} -f ${params.file}`,
+      script: `${script} cron -d ${dryParam} -i ${params.id} -f ${params.file}`,
       name: buildCronProcessName(params.id)
     });
 

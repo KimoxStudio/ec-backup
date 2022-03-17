@@ -8,13 +8,11 @@
     "node": ">= 14.16 <15"
   },
   "scripts": {
-    "start": "node build/src/main.js",
-    "start:cron": "node build/src/cron.js",
-    "start:dev": "ts-node src/main.ts",
-    "start:dev:cron": "ts-node src/main.ts",
+    "start": "NODE_ENV=production node build/src/main.js",
+    "start:dev": "NODE_ENV=development ts-node src/main.ts",
     "clean": "rimraf coverage build tmp",
     "test": "jest",
-    "build": "yarn clean && tsc -p tsconfig.release.json && cp ./.env ./build/.env ",
+    "build": "yarn clean && tsc -p tsconfig.release.json",
     "pm2": "yarn build && pm2 start build/src/cron.js",
     "lint": "eslint . --ext .ts,.tsx"
   },
@@ -23,11 +21,9 @@
     "axios": "^0.26.1",
     "chalk": "4.1.2",
     "commander": "^9.0.0",
-    "dotenv": "^8.2.0",
     "node-cron": "^3.0.0",
-    "node-fetch": "^2.6.1",
     "reflect-metadata": "^0.1.13",
-    "tslib": "~2.1.0",
+    "pm2": "^5.2.0",
     "typedi": "^0.10.0",
     "yup": "^0.32.11"
   },
@@ -39,12 +35,10 @@
     "eslint": "~7.21.0",
     "eslint-config-prettier": "~8.1.0",
     "jest": "^27.5.1",
-    "pm2": "^5.2.0",
     "prettier": "~2.2.1",
     "rimraf": "~3.0.2",
     "ts-jest": "^27.1.3",
     "ts-node": "^9.1.1",
-    "tsutils": "~3.20.0",
-    "typescript": "~4.2.2"
+    "typescript": "^4.6.2"
   }
 }
