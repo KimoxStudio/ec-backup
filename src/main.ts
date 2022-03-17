@@ -1,15 +1,17 @@
-import { mongodbBackup } from './mongodbBackup';
+import 'reflect-metadata';
+import { program } from 'commander';
+import { ValidateConfigCliCommand } from './commands/validate-config/ValidateConfigCliCommand';
+import { BackupCliCommand } from './commands/backup/BackupCliCommand';
+import { CronCliCommand } from './commands/cron/CronCliCommand';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const main = async () => {
-  try {
-    await mongodbBackup();
-  } catch (e) {
-    console.error(e);
-    console.log(
-      'An exception occurred while making backup. Make sure that your BBDD in Mongo exists.'
-    );
-  }
-};
+program.description('Easy backup');
 
-main().then(() => process.exit(0));
+new ValidateConfigCliCommand(program);
+new BackupCliCommand(program);
+new CronCliCommand(program);
+
+program.parse(process.argv);
+
+if (!process.argv.slice(2).length) {
+  program.helpInformation();
+}

@@ -33,3 +33,5 @@ output/
 credentials/
 
 .env
+
+backup.config.json
