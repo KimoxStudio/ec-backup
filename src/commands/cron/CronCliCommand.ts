@@ -80,14 +80,24 @@ export class CronCliCommand extends BackupCliCommand {
   }
 
   private async stopProcess(params: CronCliParams) {
-    const processName = buildCronProcessName(params.id);
-
     try {
       const pm2p = Pm2Promisified();
 
-      await pm2p.delete(params.id);
+      const processName = buildCronProcessName(params.id);
 
-      logger.successImportant(`Stopped process with id: ${params.id}`);
+      const processes = await getCurrentProcesses();
+
+      const process = processes.find((p) => p.name === processName);
+
+      if (!process) {
+        logger.warn(`Process with id ${params.id} not found`);
+      } else {
+        await this.removeProcessLogFiles(process);
+
+        await pm2p.delete(params.id);
+
+        logger.successImportant(`Stopped process with id: ${params.id}`);
+      }
     } catch (e) {
       if (e.message?.includes('process or namespace not found')) {
         logger.warn(`Process with id ${params.id} not found`);
@@ -95,6 +105,18 @@ export class CronCliCommand extends BackupCliCommand {
         logger.errorImportant('Unknown error');
       }
     }
+  }
+
+  private async removeProcessLogFiles(process: pm2.Proc) {
+    const processAny = process as any;
+    const errorLogPath = processAny.pm2_env.pm_err_log_path;
+    const infoLogPath = processAny.pm2_env.pm_out_log_path;
+
+    try {
+      fs.unlinkSync(errorLogPath);
+      fs.unlinkSync(infoLogPath);
+      // eslint-disable-next-line no-empty
+    } catch {}
   }
 
   private assertParamIdentifier(params: CronCliParams) {
@@ -114,15 +136,15 @@ export class CronCliCommand extends BackupCliCommand {
         `Already running a backup process with id: ${params.id}. Stopping...`
       );
 
-      await pm2p.delete(params.id);
+      await this.stopProcess(params);
     }
 
     const dryParam = params.dry ? '--dry' : '';
 
     const script =
-      process.env.NODE_ENV === 'production'
-        ? `node build/src/main.js`
-        : `ts-node src/main.ts`;
+      process.env.NODE_ENV === 'development'
+        ? `ts-node src/main.ts`
+        : `node build/src/main.js`;
 
     await pm2p.start({
       script: `${script} cron -d ${dryParam} -i ${params.id} -f ${params.file}`,
