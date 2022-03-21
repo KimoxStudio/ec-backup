@@ -27,10 +27,11 @@ import {
   GoogleCloudStorageUploaderConfig,
   GoogleCloudStorageUploaderConfigSchema
 } from './configs/uploaders/GoogleCloudStorageUploaderConfig';
+import { NoneUploaderConfigSchema } from './configs/uploaders/NoneUploaderConfig';
 
 const logger = createLogger('ConfigValidator');
 
-const validUploaderConfigTypes = ['gcp'];
+const validUploaderConfigTypes = ['gcp', 'none'];
 const validNotificatorConfigTypes = ['telegram', 'console'];
 const validEngineConfigTypes = ['mongo', 'file'];
 
@@ -184,16 +185,28 @@ export class ValidateConfigCliCommand extends CliCommand<ValidateConfigCliParams
     }
 
     try {
-      if (rawConfig.type === 'gcp') {
-        const validation = await GoogleCloudStorageUploaderConfigSchema.validate(
-          rawConfig
-        );
+      let validator:
+        | typeof GoogleCloudStorageUploaderConfigSchema
+        | typeof NoneUploaderConfigSchema
+        | undefined;
 
-        return (validation as unknown) as GoogleCloudStorageUploaderConfig;
-      } else {
+      switch (rawConfig.type) {
+        case 'gcp':
+          validator = GoogleCloudStorageUploaderConfigSchema;
+          break;
+        case 'none':
+          validator = NoneUploaderConfigSchema;
+          break;
+      }
+
+      if (!validator) {
         this.throwError('Unknown uploader');
         process.exit(1);
       }
+
+      const validation = await validator.validate(rawConfig);
+
+      return validation as ValidUploaderConfig;
     } catch (e) {
       logger.errorImportant('Invalid uploader config ❌');
 

@@ -41,7 +41,7 @@ Configuration file is split in 3 main parts:
   - `console`: just print to console
 - **Uploader**: where we put your fresh backup
   - `gcp`: Google Cloud Storage
-  - `file`: drop it somewhere in your system (_soon_)
+  - `none`: drop it where you specified in _outputDir_ field
 
 ### Skeleton
 

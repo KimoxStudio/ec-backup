@@ -15,6 +15,7 @@ import { GoogleCloudStorageUploader } from '../../uploaders/GoogleCloudStorageUp
 import { cleanup } from '../../util/cleanup';
 import { createOutputFolder } from '../../util/createOutputFolder';
 import { CliParams } from '../CliParams';
+import { NoneUploader } from '../../uploaders/NoneUploader';
 
 const logger = createLogger('BackupCli');
 
@@ -92,6 +93,9 @@ export class BackupCliCommand extends CliCommand<ValidConfig> {
           new GoogleCloudStorageUploader(config.uploader)
         );
         break;
+      case 'none':
+        Container.set<Uploader>('uploader', new NoneUploader(config.uploader));
+        break;
     }
   }
 
@@ -111,7 +115,9 @@ export class BackupCliCommand extends CliCommand<ValidConfig> {
 
       await notificator.notify(config.notificator.successMessage);
 
-      cleanup(config.outputDir);
+      if (config.uploader.type !== 'none') {
+        cleanup(config.outputDir);
+      }
     } catch (e) {
       await notificator.notify(`${config.notificator.errorMessage}: ${e}`);
     }
