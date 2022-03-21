@@ -10,9 +10,28 @@ Right now this package is tested only on Ubuntu 20.04 LTS and you need to have t
 - [Mongo Database Tools](https://docs.mongodb.com/database-tools/installation/installation/) (only in case that your backup is from MongoDB)
   - Tested version: `100.5.2`
 
+## How to use
+
+- First you need to create the config file that `ec-backup` will read its instructions (see section below for this).
+- You can validate your config file with: `ec-backup validate -f <yourconfigfilepath>`
+
+### One single time
+
+If you want to backup only one time (or to verify that your process works well) just: `ec-backup backup -f <yourconfigfilepath>`
+
+Also, you can use `--dry` to do not notify and upload your backup zip, but you can check that backup file is created where you specify in the config:
+
+### Cron
+
+To create the process you must specify an ID, some examples:
+
+- `ec-backup cron --id example-id -f <yourconfigfilepath>`: create a cron process
+- `ec-backup cron --stop --id example-id`: try to stop a cron process with id _example-id_
+- `ec-backup cron --list`: list all current cron precesses
+
 ## Config
 
-Configuration is split in 3 steps:
+Configuration file is split in 3 main parts:
 
 - **Backup engine**: what kind of data source we will backup
   - `mongo`: backup your database from MongoDB
@@ -28,13 +47,13 @@ Configuration is split in 3 steps:
 
 Use following examples (backup engines, notificator, uploader) to make your own config file, here is the skeleton:
 
-```json
+```json5
 {
    "cron": "* * * * * *", // Cron schedule expression (https://crontab.guru)
    "outputDir": "/tmp", // Temporary folder to store your backup until upload
-   "engine": { ... }// Backup engine config,
-   "notificator": { ... }// Notificator config,
-   "uploader": { ... }// Uploader config
+   "engine": { ... } // Backup engine config,
+   "notificator": { ... } // Notificator config,
+   "uploader": { ... } // Uploader config
 }
 ```
 

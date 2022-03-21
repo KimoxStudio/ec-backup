@@ -28,6 +28,7 @@
     "start": "node build/src/main.js",
     "start:dev": "cross-env NODE_ENV=development ts-node src/main.ts",
     "test": "jest",
+    "prepare": "yarn build",
     "build": "rimraf build && tsc -p tsconfig.release.json && chmod +x build/src/main.js",
     "lint": "eslint . --ext .ts,.tsx"
   },
