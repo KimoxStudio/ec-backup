@@ -1,6 +1,6 @@
 {
   "name": "ec-backup",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Jesé Romero Arbelo <jeseromeroarbelo@gmail.com>",
   "license": "MIT",
   "description": "Backup tool to make it easy",
