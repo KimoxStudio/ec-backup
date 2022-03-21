@@ -1,73 +1,99 @@
-# MongoDB ➡️ Google Cloud Storage (for now)
+# EC Backup (easy-backup)
 
-## What kind of problem resolves?
+If you need a system easy to use that provides you a periodic (or at specific time) backup. This is your package.
 
-In case that you have MongoDB, Google Cloud Storage as your main cloud storage system, and you want automatic backups, this is your place.
+## Requirements
 
-## How to use
+Right now this package is tested only on Ubuntu 20.04 LTS and you need to have the following packages in order to work:
 
-It's pretty simple
+- zip: `sudo apt install zip`
+- [Mongo Database Tools](https://docs.mongodb.com/database-tools/installation/installation/) (only in case that your backup is from MongoDB)
+  - Tested version: `100.5.2`
 
-- Clone this repository into some static place in order to execute the cron
-  - `git clone git@github.com:KimoxStudio/mongo-to-gcs-backup.git`
-- Add the environment variables needed to work
-  - see section below and `.env.example` file for more info
-- Install dependencies with `yarn`
-- Then `yarn pm2`
-  - This will generate a daemon that execute cron in background
+## Config
 
-## Features
+Configuration is split in 3 steps:
 
-- Cron
-- Send telegram notifications in case of success or error
-- Fully configurable
+- **Backup engine**: what kind of data source we will backup
+  - `mongo`: backup your database from MongoDB
+  - `file`: choose files from your system to backup
+- **Notificator**: how do you want to be notified
+  - `telegram`: uses a channel and a bot to notify all your backups
+  - `console`: just print to console
+- **Uploader**: where we put your fresh backup
+  - `gcp`: Google Cloud Storage
+  - `file`: drop it somewhere in your system (_soon_)
 
-## TODO
+### Skeleton
 
-- Add user and password mongodb auth
-- Add other cloud providers (¿S3?)
-- Add other notification providers (¿Slack?)
+Use following examples (backup engines, notificator, uploader) to make your own config file, here is the skeleton:
 
-### Environment variables
+```json
+{
+   "cron": "* * * * * *", // Cron schedule expression (https://crontab.guru)
+   "outputDir": "/tmp", // Temporary folder to store your backup until upload
+   "engine": { ... }// Backup engine config,
+   "notificator": { ... }// Notificator config,
+   "uploader": { ... }// Uploader config
+}
+```
 
-#### `GCP_STORAGE_KEY_PATH`
+### Backup engines
 
-This key will authenticate the process against Google Cloud Storage to upload the backup
+#### mongo
 
-#### `GCP_BACKUPS_FOLDER_PATH`
+```json
+{
+  "type": "mongo",
+  "databaseHost": "", // Host name of your MongoDB
+  "databasePort": 27017, // [Optional] Database port. Defaults to 27017
+  "databaseName": "",
+  "username": "" // [Optional] In case that your DDBB needs auth
+  "password": "" // [Optional]
+}
+```
 
-Directory where backups will be placed into GCP.
+#### file
 
-Default: `backups`
+```json
+{
+  "type": "file",
+  "path": "" // Path to drop out the zipped backup
+}
+```
 
-#### `GCP_BUCKET_NAME`
+### Notificator
 
-Name of the bucket where backups will be upload
+#### Telegram
 
-#### `GCP_PROJECT_ID`
+```json
+{
+  "type": "telegram",
+  "chatId": "", // ID of the chat where you want to be notified
+  "botToken": "" // Token ID (without "bot" prefix in case that have) (https://core.telegram.org/bots)
+}
+```
 
-ID of your Google Cloud Project
+Note: You can obtain the chatId from this URL: [https://api.telegram.org/bot<putYourToken>/getUpdates](https://api.telegram.org/bot<putYourToken>/getUpdates). Substitute `<putYourToken>` with your bot token
 
-#### `DATABASE_NAME`
+#### Console
 
-Database name where to extract backup
+```json
+{
+  "type": "console"
+}
+```
 
-#### `DATABASE_HOST`
+### Uploader
 
-Host name of your MongoDB
+#### Google Cloud Storage
 
-#### `CRON_SCHEDULE_TIME`
-
-Cron schedule time configuration. Here you can config your own: [crontab.guru](https://crontab.guru/#59_23_*_*_*)
-
-Default: `59 23 * * *`
-
-#### `TELEGRAM_BOT_TOKEN`
-
-Token of your telegram bot. Here you can obtain your own [https://core.telegram.org/bots](https://core.telegram.org/bots)
-
-#### `TELEGRAM_CHAT_ID`
-
-Chat ID where the message will be sent. To get this value you have to make a GET request to this URL: [https://api.telegram.org/bot<putYourToken>/getUpdates](https://api.telegram.org/bot<putYourToken>/getUpdates)
-
-Substitute `<putYourToken>` with your bot token
+```json
+{
+  "type": "gcp",
+  "storageKeyPath": "", // JSON Key file that authenticate your program on GCP
+  "backupsFolderPath": "", // [Optional] Name of the folder inside the bucket to put the backup. Defaults to "backups"
+  "bucketName": "",
+  "projectId": ""
+}
+```
