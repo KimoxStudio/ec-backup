@@ -1,19 +1,35 @@
 {
-  "name": "easy-backup",
-  "version": "0.0.1",
+  "name": "ec-backup",
+  "version": "1.0.1",
   "author": "Jesé Romero Arbelo <jeseromeroarbelo@gmail.com>",
-  "license": "Apache-2.0",
-  "description": "",
+  "license": "MIT",
+  "description": "Backup tool to make it easy",
   "engines": {
     "node": ">= 14.16 <15"
   },
+  "bin": {
+    "ec-backup": "./build/src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KimoxStudio/ec-backup.git"
+  },
+  "homepage": "https://github.com/KimoxStudio/ec-backup",
+  "bugs": "https://github.com/KimoxStudio/ec-backup/issues",
+  "keywords": [
+    "backup",
+    "easy-backup",
+    "mongodb",
+    "gcp",
+    "file-backup",
+    "mongodb-backup"
+  ],
   "scripts": {
     "start": "NODE_ENV=production node build/src/main.js",
     "start:dev": "NODE_ENV=development ts-node src/main.ts",
     "clean": "rimraf coverage build tmp",
     "test": "jest",
     "build": "yarn clean && tsc -p tsconfig.release.json",
-    "pm2": "yarn build && pm2 start build/src/cron.js",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
