@@ -10,6 +10,10 @@ Right now this package is tested only on Ubuntu 20.04 LTS and you need to have t
 - [Mongo Database Tools](https://docs.mongodb.com/database-tools/installation/installation/) (only in case that your backup is from MongoDB)
   - Tested version: `100.5.2`
 
+## How to install
+
+Just `npm i -g ec-backup` or use it with `npx ec-backup`
+
 ## How to use
 
 - First you need to create the config file that `ec-backup` will read its instructions (see section below for this).
