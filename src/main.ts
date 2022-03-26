@@ -5,6 +5,9 @@ import { program } from 'commander';
 import { ValidateConfigCliCommand } from './commands/validate-config/ValidateConfigCliCommand';
 import { BackupCliCommand } from './commands/backup/BackupCliCommand';
 import { CronCliCommand } from './commands/cron/CronCliCommand';
+import { setRootDir } from './util/rootDir';
+
+setRootDir(`${__dirname}/..`);
 
 program.description('Easy backup');
 

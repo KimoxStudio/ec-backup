@@ -235,8 +235,8 @@ export class ValidateConfigCliCommand extends CliCommand<ValidateConfigCliParams
 
     try {
       file = readFileSync(configPath, { encoding: 'utf8' });
-    } catch (e) {
-      this.throwError(`${configPath} do not exist`, e);
+    } catch {
+      this.throwError(`${configPath} do not exist`);
     }
 
     let rawConfig: Partial<ValidConfig>;

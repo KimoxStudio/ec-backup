@@ -12,6 +12,7 @@ import { Pm2Promisified } from './utils/Pm2Promisified';
 import { getCurrentProcesses } from './utils/getCurrentProcesses';
 import { buildCronProcessName } from './utils/buildCronProcessName';
 import * as fs from 'fs';
+import { getRootDir } from '../../util/rootDir';
 
 type CronCliParams = CliParams & {
   id: string;
@@ -31,7 +32,11 @@ export class CronCliCommand extends BackupCliCommand {
 
       const validator = new ValidateConfigCliCommand(this.program);
 
-      const config = await validator.validate(params, { cron: true });
+      let config: ValidConfig | undefined;
+
+      if (!params.list && !params.stop) {
+        config = await validator.validate(params, { cron: true });
+      }
 
       await this.execute(config);
     });
@@ -47,8 +52,10 @@ export class CronCliCommand extends BackupCliCommand {
     return command;
   }
 
-  async execute(config: ValidConfig): Promise<void> {
-    this.registerContainer(config);
+  async execute(config?: ValidConfig): Promise<void> {
+    if (config) {
+      this.registerContainer(config);
+    }
 
     const params = Container.get<CronCliParams>('params');
 
@@ -141,10 +148,12 @@ export class CronCliCommand extends BackupCliCommand {
 
     const dryParam = params.dry ? '--dry' : '';
 
-    const script =
-      process.env.NODE_ENV === 'development'
-        ? `ts-node src/main.ts`
-        : `node build/src/main.js`;
+    const scriptFilePath =
+      process.env.NODE_ENV === 'development' ? `src/main.ts` : `src/main.js`;
+
+    const command = process.env.NODE_ENV === 'development' ? `ts-node` : `node`;
+
+    const script = `${command} ${getRootDir()}/${scriptFilePath}`;
 
     await pm2p.start({
       script: `${script} cron -d ${dryParam} -i ${params.id} -f ${params.file}`,
